@@ -15,6 +15,16 @@ class LocationData {
   final double heading;
   final double time;
 
+  LocationData(
+      {this.latitude,
+      this.longitude,
+      this.accuracy,
+      this.altitude,
+      this.speed,
+      this.speedAccuracy,
+      this.heading,
+      this.time});
+
   LocationData._(this.latitude, this.longitude, this.accuracy, this.altitude,
       this.speed, this.speedAccuracy, this.heading, this.time);
 
