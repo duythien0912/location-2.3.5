@@ -424,6 +424,9 @@ public class LocationPlugin implements MethodCallHandler, StreamHandler, PluginR
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                         result.error("SERVICE_STATUS_DISABLED",
                                 "Failed to get location. Location services disabled", null);
+                    default:
+                        String errorMessage = "Error not found";
+                        Log.e(METHOD_CHANNEL_NAME, errorMessage);
                     }
                 }
             });
@@ -458,7 +461,12 @@ public class LocationPlugin implements MethodCallHandler, StreamHandler, PluginR
                             String errorMessage = "Location settings are inadequate, and cannot be "
                                     + "fixed here. Fix in Settings.";
                             Log.e(METHOD_CHANNEL_NAME, errorMessage);
+                        default:
+                            String errorMessage2 = "Error not found";
+                            Log.e(METHOD_CHANNEL_NAME, errorMessage2);
+                            
                         }
+
                     }
                 });
     }
