@@ -78,7 +78,7 @@ public class LocationPlugin implements MethodCallHandler, StreamHandler, PluginR
     private static long update_interval_in_milliseconds = 5000;
     private static long fastest_update_interval_in_milliseconds = update_interval_in_milliseconds / 2;
     private static Integer location_accuray = LocationRequest.PRIORITY_HIGH_ACCURACY;
-    private static float distanceFilter = 0 f;
+    private static float distanceFilter = 0;
 
     private EventSink events;
     private Result result;
