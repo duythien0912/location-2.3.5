@@ -90,6 +90,8 @@ public class LocationPlugin implements MethodCallHandler, StreamHandler, PluginR
     private boolean waitingForPermission = false;
     private LocationManager locationManager;
 
+    private boolean ongoing = false;
+
 
     private HashMap<Integer, Integer> mapFlutterAccuracy = new HashMap<>();
 
@@ -183,6 +185,15 @@ public class LocationPlugin implements MethodCallHandler, StreamHandler, PluginR
         } else {
             result.notImplemented();
         }
+    }
+
+    interface ResultCallback {
+        void processResult(int code);
+    }
+
+    private void processResult(int code) {
+        result.success(code);
+        result = null;
     }
 
     public PluginRegistry.RequestPermissionsResultListener getPermissionsResultListener() {
@@ -405,7 +416,18 @@ public class LocationPlugin implements MethodCallHandler, StreamHandler, PluginR
             return;
         }
         this.result = result;
+        if(!ongoing){
+ongoing = true;
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
+            .addOnSuccessListener(activity, new OnSuccessListener<LocationSettingsResponse>() {
+                    @Override
+                    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                        result.success(1);
+                        ongoing = false;
+                        // result.success(1);
+                        // return;
+                    }
+            })
             .addOnFailureListener(activity, new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
@@ -419,17 +441,31 @@ public class LocationPlugin implements MethodCallHandler, StreamHandler, PluginR
                             rae.startResolutionForResult(activity, GPS_ENABLE_REQUEST);
                         } catch (IntentSender.SendIntentException sie) {
                             Log.i(METHOD_CHANNEL_NAME, "PendingIntent unable to execute request.");
+                            // result.error("PENDINGINTENT_UNABLE",
+                            //     "PendingIntent unable to execute request.", null);
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        result.error("SERVICE_STATUS_DISABLED",
-                                "Failed to get location. Location services disabled", null);
+                        Log.i(METHOD_CHANNEL_NAME, "Failed to get location. Location services disabled.");
+                        // result.error("SERVICE_STATUS_DISABLED",
+                        //         "Failed to get location. Location services disabled", null);
+                        break;
                     default:
                         String errorMessage = "Error not found";
                         Log.e(METHOD_CHANNEL_NAME, errorMessage);
+                        // result.error("ERROR_NOT_FOUND",
+                        //         "Error not found", null);
+                        break;
                     }
+
+                    // result.success(0);
+                    ongoing = false;
+                    // result.success(0);
+                    // return;
                 }
             });
+        }
+
     }
 
     public void startRequestingLocation() {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 /// A data class that contains various information about the user's location.
 ///
@@ -69,7 +70,14 @@ class Location {
   /// Throws an error if the app has no permission to access location.
   Future<LocationData> getLocation() => _channel
       .invokeMethod('getLocation')
-      .then((result) => LocationData.fromMap(result.cast<String, double>()));
+      .then((result) {
+        debugPrint(result.toString());
+        return LocationData.fromMap(result.cast<String, double>());
+      })
+      .catchError((e) => debugPrint(e.toString()))
+      .whenComplete(() {
+        // debugPrint("result.toString()");
+      });
 
   /// Checks if the app has permission to access location.
   Future<bool> hasPermission() =>
